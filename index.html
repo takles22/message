@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Us</title>
+  <!-- Load Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <textarea id="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    // Initialize Supabase Client
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById("contactForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const statusText = document.getElementById("status");
+      statusText.innerText = "Sending...";
+
+      const name = document.getElementById("name").value;
+      const message = document.getElementById("message").value;
+
+      // Send payload (timestamp 'created_at' is generated automatically by Postgres)
+      const { error } = await supabaseClient
+        .from("contact_messages")
+        .insert([{ name: name, message: message }]);
+
+      if (error) {
+        statusText.innerText = "Failed to send message. Please try again.";
+        console.error("Supabase Error:", error.message);
+      } else {
+        statusText.innerText = "Message sent successfully!";
+        document.getElementById("contactForm").reset();
+      }
+    });
+  </script>
+</body>
+</html>
