@@ -2,19 +2,237 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Contact Us</title>
-  <!-- Load Supabase JS Client -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get in Touch</title>
+  
+  <!-- Inter Font & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      --glass-bg: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-gradient);
+      overflow-x: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* Ambient Background Glows */
+    .glow-1, .glow-2 {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glow-1 {
+      width: 400px;
+      height: 400px;
+      background: rgba(99, 102, 241, 0.25);
+      top: 10%;
+      left: 15%;
+    }
+    .glow-2 {
+      width: 350px;
+      height: 350px;
+      background: rgba(217, 70, 239, 0.2);
+      bottom: 10%;
+      right: 15%;
+    }
+
+    /* Main Container */
+    .card-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-text {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header-text h1 {
+      color: var(--text-main);
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 8px;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 16px 14px 44px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    input:focus + i, textarea:focus + i {
+      color: var(--accent-color);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      background: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      margin-top: 24px;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* Status Notifications */
+    #status {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      min-height: 24px;
+    }
+    
+    .status-success { color: #4ade80; }
+    .status-error { color: #f87171; }
+  </style>
 </head>
 <body>
 
-  <form id="contactForm">
-    <input type="text" id="name" placeholder="Your Name" required />
-    <textarea id="message" placeholder="Your Message" required></textarea>
-    <button type="submit">Send Message</button>
-  </form>
+  <!-- Ambient Glow Effects -->
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
 
-  <p id="status"></p>
+  <!-- Contact Card Container -->
+  <div class="card-container">
+    <div class="header-text">
+      <h1>Send a Message</h1>
+      <p>Have a question or proposal? Drop a note below.</p>
+    </div>
+
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <div class="input-wrapper">
+          <input type="text" id="name" placeholder="John Doe" required />
+          <i class="fa-regular fa-user"></i>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <div class="input-wrapper">
+          <textarea id="message" placeholder="Write your message here..." required></textarea>
+          <i class="fa-regular fa-comment"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span>Send Message</span>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+
+    <div id="status"></div>
+  </div>
 
   <script>
     // Initialize Supabase Client
@@ -26,24 +244,32 @@
       e.preventDefault();
       
       const statusText = document.getElementById("status");
+      const submitBtn = e.target.querySelector('button');
+
+      statusText.className = "";
       statusText.innerText = "Sending...";
+      submitBtn.disabled = true;
 
       const name = document.getElementById("name").value;
       const message = document.getElementById("message").value;
 
-      // Send payload (timestamp 'created_at' is generated automatically by Postgres)
       const { error } = await supabaseClient
         .from("contact_messages")
         .insert([{ name: name, message: message }]);
 
       if (error) {
+        statusText.className = "status-error";
         statusText.innerText = "Failed to send message. Please try again.";
         console.error("Supabase Error:", error.message);
       } else {
+        statusText.className = "status-success";
         statusText.innerText = "Message sent successfully!";
         document.getElementById("contactForm").reset();
       }
+
+      submitBtn.disabled = false;
     });
   </script>
+
 </body>
 </html>
